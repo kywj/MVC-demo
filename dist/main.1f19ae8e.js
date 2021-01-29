@@ -11339,16 +11339,19 @@ var _jquery = _interopRequireDefault(require("jquery"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var $tabBar = (0, _jquery.default)('#app2 .tab-bar');
-var $tabContent = (0, _jquery.default)('#app2 .tab-content');
-$tabBar.on('click', 'li', function (e) {
+var $tabBar = (0, _jquery.default)("#app2 .tab-bar");
+var $tabContent = (0, _jquery.default)("#app2 .tab-content");
+var localKey = "app2.index";
+var index = localStorage.getItem(localKey) || 0;
+$tabBar.on("click", "li", function (e) {
   var $li = (0, _jquery.default)(e.currentTarget);
-  $li.addClass('selected').siblings().removeClass('selected');
+  $li.addClass("selected").siblings().removeClass("selected");
   var index = $li.index();
+  localStorage.setItem("app2.index", index);
   console.log(index);
-  $tabContent.children().eq(index).addClass('active').siblings().removeClass('active');
+  $tabContent.children().eq(index).addClass("active").siblings().removeClass("active");
 });
-$tabBar.children().eq(0).trigger('click');
+$tabBar.children().eq(index).trigger("click");
 },{"./app2.css":"app2.css","jquery":"../node_modules/jquery/dist/jquery.js"}],"app3.css":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
@@ -11363,9 +11366,18 @@ var _jquery = _interopRequireDefault(require("jquery"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var $square = (0, _jquery.default)('#app3 .square');
-$square.on('click', function () {
-  $square.toggleClass('active');
+var $square = (0, _jquery.default)("#app3 .square");
+var localKey = "app3.active";
+var active = localStorage.getItem(localKey) === "yes";
+$square.toggleClass("active", active);
+$square.on("click", function () {
+  if ($square.hasClass("active")) {
+    $square.removeClass("active");
+    localStorage.setItem("app3.active", "no");
+  } else {
+    $square.addClass("active");
+    localStorage.setItem("app3.active", "yes");
+  }
 });
 },{"./app3.css":"app3.css","jquery":"../node_modules/jquery/dist/jquery.js"}],"app4.css":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
@@ -11381,11 +11393,11 @@ var _jquery = _interopRequireDefault(require("jquery"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var $circle = (0, _jquery.default)('#app4 .circle');
-$circle.on('mouseenter', function () {
-  $circle.addClass('active');
-}).on('mouseleave', function () {
-  $circle.removeClass('active');
+var $circle = (0, _jquery.default)("#app4 .circle");
+$circle.on("mouseenter", function () {
+  $circle.addClass("active");
+}).on("mouseleave", function () {
+  $circle.removeClass("active");
 });
 },{"./app4.css":"app4.css","jquery":"../node_modules/jquery/dist/jquery.js"}],"main.js":[function(require,module,exports) {
 "use strict";
@@ -11429,7 +11441,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50815" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52157" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
