@@ -20,19 +20,21 @@ body > .page {
   flex-wrap: wrap;
 }
 body > .page > section {
+  border: 1px solid grey;
   width: 50vw;
   height: 50vh;
 }
 
-#app1{
-  border: 1px solid red;
+#app1 {
   width: 50vw;
   height: 50vh;
 }
-#app1 .ouput{}
-#app1 .actions{}
+#app1 .ouput {
+}
+#app1 .actions {
+}
+
 #app2 {
-  border: 1px solid blue;
 }
 #app2 .tab-bar {
   display: flex;
@@ -51,6 +53,40 @@ body > .page > section {
 }
 #app2 .tab-content > li.active {
   display: block;
+}
+
+#app3 {
+}
+#app3 > .square {
+  border: 1px solid grey;
+  margin-top: 10vw;
+  margin-left: 10vw;
+  width: 10vw;
+  height: 10vw;
+  transition: transform 0.5s;
+}
+#app3 > .square.active {
+  transform: translateX(15vw);
+}
+
+#app4 {
+}
+@keyframes change {
+  0% {
+    background: red;
+  }
+  100% {
+    background: blue;
+  }
+}
+#app4 .circle {
+  width: 10vw;
+  height: 10vw;
+  border-radius: 50%;
+  border: 1px solid red;
+}
+#app4 .circle.active {
+  animation: change 1s alternate-reverse infinite linear;
 }
 
 
