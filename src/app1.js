@@ -1,12 +1,21 @@
 import "./app1.css";
 import $ from "jquery";
 
+const eventBus = $({});
+console.log(eventBus);
 // 数据相关放到M
 const m = {
   data: {
     // 初始化数据
     n: parseInt(localStorage.getItem("n")),
   },
+  create() {},
+  delete() {},
+  update(data) {
+    Object.assign(m.data, data);
+    eventBus.trigger("m:updated");
+  },
+  get() {},
 };
 // 视图相关放到v
 const v = {
@@ -25,17 +34,11 @@ const v = {
   </div>
 `,
   init(container) {
-    v.container = $(container);
-    v.render();
+    v.el = $(container);
   },
-  render(container) {
-    if (v.el === null) {
-      v.el = $(v.html.replace("{{n}}", m.data.n)).appendTo(v.container);
-    } else {
-      const newEl = $(v.html.replace("{{n}}", m.data.n));
-      v.el.replaceWith(newEl);
-      v.el = newEl;
-    }
+  render(n) {
+    if (v.el.children.length !== 0) v.el.empty();
+    $(v.html.replace("{{n}}", n)).appendTo(v.el);
   },
 };
 
@@ -43,34 +46,39 @@ const v = {
 const c = {
   init(container) {
     v.init(container);
-    c.ui = {
-      // 寻找重要的元素
-      button1: $("#add1"),
-      button2: $("#minus1"),
-      button3: $("#mul2"),
-      button4: $("#divide2"),
-      number: $("#number"),
-    };
-    c.bindEvents();
+    v.render(m.data.n); // view = render(data)
+    c.autoBindEvents();
+    eventBus.on("m:updated", () => {
+      console.log("here");
+      v.render(m.data.n);
+    });
   },
-
-  bindEvents() {
-    v.container.on("click", "#add1", () => {
-      m.data.n += 1;
-      v.render();
-    });
-    v.container.on("click", "#minus1", () => {
-      m.data.n -= 1;
-      v.render();
-    });
-    v.container.on("click", "#mul2", () => {
-      m.data.n *= 2;
-      v.render();
-    });
-    v.container.on("click", "#divide2", () => {
-      m.data.n /= 2;
-      v.render();
-    });
+  events: {
+    "click #add1": "add",
+    "click #minus1": "minus",
+    "click #mul2": "mul",
+    "click #divide2": "div",
+  },
+  add() {
+    m.update({ n: m.data.n + 1 });
+  },
+  minus() {
+    m.update({ n: m.data.n - 1 });
+  },
+  mul() {
+    m.update({ n: m.data.n * 2 });
+  },
+  div() {
+    m.update({ n: m.data.n / 2 });
+  },
+  autoBindEvents() {
+    for (let key in c.events) {
+      const value = c[c.events[key]];
+      const spaceIndex = key.indexOf(" ");
+      const part1 = key.slice(0, spaceIndex);
+      const part2 = key.slice(spaceIndex + 1);
+      v.el.on(part1, part2, value);
+    }
   },
 };
 

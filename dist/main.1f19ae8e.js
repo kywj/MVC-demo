@@ -11299,62 +11299,80 @@ var _jquery = _interopRequireDefault(require("jquery"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// 数据相关放到M
+var eventBus = (0, _jquery.default)({});
+console.log(eventBus); // 数据相关放到M
+
 var m = {
   data: {
     // 初始化数据
     n: parseInt(localStorage.getItem("n"))
-  }
+  },
+  create: function create() {},
+  delete: function _delete() {},
+  update: function update(data) {
+    Object.assign(m.data, data);
+    eventBus.trigger("m:updated");
+  },
+  get: function get() {}
 }; // 视图相关放到v
 
 var v = {
   el: null,
   html: "\n  <div>\n    <div class=\"output\">\n      <span id=\"number\">{{n}}</span>\n    </div>\n    <div class=\"actions\">\n      <button id=\"add1\">+1</button>\n      <button id=\"minus1\">-1</button>\n      <button id=\"mul2\">*2</button>\n      <button id=\"divide2\">\xF72</button>\n    </div>\n  </div>\n",
   init: function init(container) {
-    v.container = (0, _jquery.default)(container);
-    v.render();
+    v.el = (0, _jquery.default)(container);
   },
-  render: function render(container) {
-    if (v.el === null) {
-      v.el = (0, _jquery.default)(v.html.replace("{{n}}", m.data.n)).appendTo(v.container);
-    } else {
-      var newEl = (0, _jquery.default)(v.html.replace("{{n}}", m.data.n));
-      v.el.replaceWith(newEl);
-      v.el = newEl;
-    }
+  render: function render(n) {
+    if (v.el.children.length !== 0) v.el.empty();
+    (0, _jquery.default)(v.html.replace("{{n}}", n)).appendTo(v.el);
   }
 }; // 其他都放到C
 
 var c = {
   init: function init(container) {
     v.init(container);
-    c.ui = {
-      // 寻找重要的元素
-      button1: (0, _jquery.default)("#add1"),
-      button2: (0, _jquery.default)("#minus1"),
-      button3: (0, _jquery.default)("#mul2"),
-      button4: (0, _jquery.default)("#divide2"),
-      number: (0, _jquery.default)("#number")
-    };
-    c.bindEvents();
+    v.render(m.data.n); // view = render(data)
+
+    c.autoBindEvents();
+    eventBus.on("m:updated", function () {
+      console.log("here");
+      v.render(m.data.n);
+    });
   },
-  bindEvents: function bindEvents() {
-    v.container.on("click", "#add1", function () {
-      m.data.n += 1;
-      v.render();
+  events: {
+    "click #add1": "add",
+    "click #minus1": "minus",
+    "click #mul2": "mul",
+    "click #divide2": "div"
+  },
+  add: function add() {
+    m.update({
+      n: m.data.n + 1
     });
-    v.container.on("click", "#minus1", function () {
-      m.data.n -= 1;
-      v.render();
+  },
+  minus: function minus() {
+    m.update({
+      n: m.data.n - 1
     });
-    v.container.on("click", "#mul2", function () {
-      m.data.n *= 2;
-      v.render();
+  },
+  mul: function mul() {
+    m.update({
+      n: m.data.n * 2
     });
-    v.container.on("click", "#divide2", function () {
-      m.data.n /= 2;
-      v.render();
+  },
+  div: function div() {
+    m.update({
+      n: m.data.n / 2
     });
+  },
+  autoBindEvents: function autoBindEvents() {
+    for (var key in c.events) {
+      var value = c[c.events[key]];
+      var spaceIndex = key.indexOf(" ");
+      var part1 = key.slice(0, spaceIndex);
+      var part2 = key.slice(spaceIndex + 1);
+      v.el.on(part1, part2, value);
+    }
   }
 };
 var _default = c;
@@ -11485,7 +11503,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56395" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62334" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
