@@ -1,22 +1,24 @@
 import "./app1.css";
 import $ from "jquery";
 
-const eventBus = $({});
-console.log(eventBus);
+const eventBus = $(window);
+
 // 数据相关放到M
 const m = {
   data: {
     // 初始化数据
-    n: parseInt(localStorage.getItem("n")),
+    n: parseInt(localStorage.getItem("n")) || 0,
   },
   create() {},
   delete() {},
   update(data) {
     Object.assign(m.data, data);
     eventBus.trigger("m:updated");
+    localStorage.setItem('n', m.data.n)
   },
   get() {},
 };
+
 // 视图相关放到v
 const v = {
   el: null,
